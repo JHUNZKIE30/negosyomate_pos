@@ -1,0 +1,31 @@
+
+{
+  "name": "negosyomate-pos",
+  "version": "1.0.0",
+  "description": "NegosyoMate POS for Windows",
+  "main": "main.js",
+  "author": "NegosyoMate",
+  "scripts": {
+    "dist": "electron-builder --win nsis"
+  },
+  "devDependencies": {
+    "electron": "^37.0.0",
+    "electron-builder": "^26.0.0"
+  },
+  "build": {
+    "appId": "com.negosyomate.pos",
+    "productName": "NegosyoMate POS",
+    "files": [
+      "index.html",
+      "main.js",
+      "package.json"
+    ],
+    "win": {
+      "target": "nsis"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    }
+  }
+}
