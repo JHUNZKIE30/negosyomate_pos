@@ -1,0 +1,445 @@
+
+<!DOCTYPE html>
+<html lang="fil">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>NegosyoMate POS</title>
+<style>
+:root{--green:#116b50;--bg:#f3f6f5;--line:#dfe7e3}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:#172b26;
+font-family:Arial,sans-serif}
+header{background:var(--green);color:white;padding:18px}
+header h1{margin:0 0 5px;font-size:23px}
+header p{margin:0;font-size:13px}
+nav{display:flex;gap:7px;padding:10px;background:white;
+overflow-x:auto;position:sticky;top:0;z-index:2}
+button{cursor:pointer;border:0;border-radius:8px;padding:11px;
+background:var(--green);color:white;font-weight:bold}
+nav button{white-space:nowrap}
+button.gray{background:#52635c}
+button.red{background:#b42318}
+button:disabled{opacity:.4;cursor:not-allowed}
+main{max-width:1100px;margin:auto;padding:14px}
+section{display:none}
+section.active{display:block}
+h2{font-size:20px}
+.panel,.metric{background:white;padding:15px;border-radius:12px;
+margin-bottom:13px;border:1px solid var(--line)}
+.metrics{display:grid;grid-template-columns:repeat(2,1fr);gap:9px}
+.metric span{font-size:12px;color:#64748b}
+.metric strong{display:block;font-size:21px;margin-top:7px;
+overflow-wrap:anywhere}
+input,select{width:100%;padding:12px;margin:5px 0 10px;
+border:1px solid #cbd5e1;border-radius:8px;background:white;
+font-size:15px}
+label{font-size:13px;font-weight:bold}
+.row{display:flex;gap:8px;align-items:center}
+.row>*{flex:1;min-width:0}
+.product,.sale{border-top:1px solid var(--line);
+padding:12px 0}
+.product strong{display:block}
+.muted{font-size:13px;color:#64748b}
+.price{color:var(--green);font-weight:bold}
+.tag{font-size:12px;background:#e5f4ed;padding:4px 7px;
+border-radius:5px;display:inline-block}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));
+gap:9px}
+.grid button{height:100%;text-align:left;background:white;
+color:#172b26;border:1px solid var(--line);line-height:1.5}
+.grid button:active{background:#e5f4ed}
+.actions{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.actions button{flex:1;padding:9px;font-size:12px}
+hr{border:0;border-top:1px solid var(--line);margin:13px 0}
+.total{font-size:21px;font-weight:bold}
+#notice{font-size:13px;color:var(--green);min-height:18px}
+@media(min-width:700px){
+ .metrics{grid-template-columns:repeat(4,1fr)}
+ .grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+ .layout{display:grid;grid-template-columns:1.2fr .8fr;gap:14px}
+}
+@media print{
+ header,nav,main,#notice,.no-print{display:none!important}
+ body{background:white}
+ #receiptPrint{display:block!important}
+}
+#receiptPrint{display:none}
+</style>
+</head>
+<body>
+<header>
+<h1>NegosyoMate POS</h1>
+<p>Point of Sale • Inventory • Sales Report</p>
+</header>
+
+<nav class="no-print">
+<button onclick="showTab('pos')">🛒 POS</button>
+<button onclick="showTab('products')">📦 Products</button>
+<button onclick="showTab('sales')">🧾 Sales</button>
+<button onclick="showTab('reports')">📊 Reports</button>
+<button onclick="showTab('backup')">💾 Backup</button>
+</nav>
+
+<main>
+<div id="notice" role="status"></div>
+
+<section id="pos" class="active">
+<h2>Checkout</h2>
+<div class="layout">
+<div class="panel">
+<label>Hanapin ang produkto</label>
+<input id="searchPOS" placeholder="Product name..."
+oninput="renderPOS()">
+<div id="posProducts" class="grid"></div>
+</div>
+<div class="panel">
+<h3>🛒 Cart</h3>
+<div id="cartList"></div>
+<hr>
+<label>Discount (₱)</label>
+<input id="discount" type="number" min="0" step=".01"
+value="0" oninput="renderCart()">
+<div class="row">
+<span>Total</span><span id="cartTotal" class="total">₱0.00</span>
+</div>
+<label>Cash received (₱)</label>
+<input id="cash" type="number" min="0" step=".01"
+placeholder="Hal. 500" oninput="renderChange()">
+<div class="row">
+<span>Sukli</span><strong id="change">₱0.00</strong>
+</div>
+<button style="width:100%;margin-top:12px"
+onclick="checkout()">Complete Sale</button>
+<button class="gray" style="width:100%;margin-top:7px"
+onclick="clearCart()">Clear Cart</button>
+</div>
+</div>
+</section>
+
+<section id="products">
+<h2>Product Management</h2>
+<div class="panel">
+<h3 id="formTitle">Add Product</h3>
+<form id="productForm">
+<input id="editId" type="hidden">
+<label>Product name</label>
+<input id="pName" maxlength="80" required placeholder="Hal. Softdrinks">
+<div class="row">
+<div><label>Cost / unit (₱)</label>
+<input id="pCost" type="number" min="0" step=".01" required></div>
+<div><label>Selling price (₱)</label>
+<input id="pPrice" type="number" min=".01" step=".01" required></div>
+</div>
+<label>Stock quantity</label>
+<input id="pStock" type="number" min="0" max="1000000"
+step="1" required>
+<button type="submit">Save Product</button>
+<button type="button" class="gray" onclick="resetForm()">Cancel Edit</button>
+</form>
+</div>
+<div class="panel">
+<label>Search inventory</label>
+<input id="searchProducts" placeholder="Search..."
+oninput="renderProducts()">
+<div id="productList"></div>
+</div>
+</section>
+
+<section id="sales">
+<h2>Sales History</h2>
+<div class="panel">
+<label>Filter by date</label>
+<input id="salesDate" type="date" onchange="renderSales()">
+<button class="gray" onclick="clearSalesFilter()">Show All Sales</button>
+<div id="salesList"></div>
+</div>
+</section>
+
+<section id="reports">
+<h2>Daily Report</h2>
+<div class="panel">
+<label>Report date</label>
+<input id="reportDate" type="date" onchange="renderReports()">
+<div class="metrics">
+<div class="metric"><span>Gross Sales</span><strong id="rSales">₱0</strong></div>
+<div class="metric"><span>Discounts</span><strong id="rDiscount">₱0</strong></div>
+<div class="metric"><span>Estimated Gross Profit</span><strong id="rProfit">₱0</strong></div>
+<div class="metric"><span>Transactions</span><strong id="rCount">0</strong></div>
+</div>
+<p class="muted">Ang gross profit estimate ay hindi pa kasama ang renta,
+kuryente, delivery, buwis, at iba pang operating expenses.</p>
+</div>
+</section>
+
+<section id="backup">
+<h2>Data Backup</h2>
+<div class="panel">
+<p>I-download ang products at sales bilang JSON backup.
+Itago ang file sa ligtas na lugar.</p>
+<button onclick="exportData()">Download Backup</button>
+<hr>
+<label>Restore backup JSON file</label>
+<input id="backupFile" type="file" accept=".json,application/json">
+<button onclick="importData()">Restore Backup</button>
+<p class="muted">Ang restore ay papalit sa kasalukuyang data.
+I-export muna ang kasalukuyang backup bago mag-restore.</p>
+<button class="red" onclick="resetAll()">Delete All Local Data</button>
+</div>
+</section>
+</main>
+
+<div id="receiptPrint"></div>
+
+<script>
+const $=id=>document.getElementById(id);
+const money=n=>"₱"+Number(n||0).toLocaleString("en-PH",{
+minimumFractionDigits:2,maximumFractionDigits:2
+});
+const today=()=>{
+const d=new Date();
+return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")
++"-"+String(d.getDate()).padStart(2,"0");
+};
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,8);
+const read=(key,fallback)=>{
+try{
+const x=JSON.parse(localStorage.getItem(key)||"null");
+return Array.isArray(x)?x:fallback;
+}catch{return fallback}
+};
+let products=read("nm_products_v1",[]);
+let sales=read("nm_sales_v1",[]);
+let cart=[];
+let lastReceipt=null;
+
+function persist(){
+try{
+localStorage.setItem("nm_products_v1",JSON.stringify(products));
+localStorage.setItem("nm_sales_v1",JSON.stringify(sales));
+$("notice").textContent="Saved on this browser.";
+}catch{
+alert("Hindi ma-save ang data. Mag-export ng backup at magbakante ng storage.");
+}
+}
+function showTab(id){
+document.querySelectorAll("main section").forEach(s=>s.classList.remove("active"));
+$(id).classList.add("active");
+renderAll();
+}
+function safeText(tag,text,className){
+const el=document.createElement(tag);
+el.textContent=String(text);
+if(className)el.className=className;
+return el;
+}
+function renderPOS(){
+const q=$("searchPOS").value.trim().toLowerCase();
+const root=$("posProducts");root.replaceChildren();
+products.filter(p=>p.name.toLowerCase().includes(q)).forEach(p=>{
+const b=document.createElement("button");
+b.append(safeText("strong",p.name),safeText("span",money(p.price)),
+safeText("div","Stock: "+p.stock,"muted"));
+b.disabled=p.stock<1;
+b.onclick=()=>addCart(p.id);
+root.append(b);
+});
+if(!root.children.length)root.textContent="No products found. Add products first.";
+renderCart();
+}
+function addCart(id){
+const p=products.find(x=>x.id===id);
+if(!p)return;
+const line=cart.find(x=>x.id===id);
+if((line?line.qty:0)>=p.stock){alert("Hindi sapat ang stock.");return}
+if(line)line.qty++;else cart.push({id,qty:1});
+renderCart();
+}
+function renderCart(){
+const root=$("cartList");root.replaceChildren();
+cart=cart.filter(c=>products.some(p=>p.id===c.id));
+cart.forEach(c=>{
+const p=products.find(x=>x.id===c.id);
+const row=document.createElement("div");row.className="product";
+row.append(safeText("strong",p.name),
+safeText("div",money(p.price)+" × "+c.qty+" = "+money(p.price*c.qty)));
+const actions=document.createElement("div");actions.className="actions";
+[["−",()=>{c.qty--;if(c.qty<=0)cart=cart.filter(x=>x.id!==c.id);renderCart()}],
+["+",()=>{if(c.qty<p.stock)c.qty++;else alert("Stock limit.");renderCart()}],
+["Remove",()=>{cart=cart.filter(x=>x.id!==c.id);renderCart()}]
+].forEach(([label,fn])=>{const b=safeText("button",label);b.onclick=fn;actions.append(b)});
+row.append(actions);root.append(row);
+});
+if(!cart.length)root.textContent="Walang item sa cart.";
+const subtotal=cart.reduce((s,c)=>s+products.find(p=>p.id===c.id).price*c.qty,0);
+const d=Math.max(0,Number($("discount").value)||0);
+$("cartTotal").textContent=money(Math.max(0,subtotal-d));
+renderChange();
+}
+function renderChange(){
+const subtotal=cart.reduce((s,c)=>{
+const p=products.find(x=>x.id===c.id);return s+(p?p.price*c.qty:0)
+},0);
+const total=Math.max(0,subtotal-Math.max(0,Number($("discount").value)||0));
+$("change").textContent=money(Math.max(0,(Number($("cash").value)||0)-total));
+}
+function clearCart(){
+if(cart.length&&!confirm("I-clear ang cart?"))return;
+cart=[];$("cash").value="";$("discount").value="0";renderCart();
+}
+function checkout(){
+if(!cart.length){alert("Walang item sa cart.");return}
+const subtotal=cart.reduce((s,c)=>{
+const p=products.find(x=>x.id===c.id);return s+(p?p.price*c.qty:0)
+},0);
+const discount=Math.max(0,Number($("discount").value)||0);
+if(discount>subtotal){alert("Hindi puwedeng mas malaki ang discount sa subtotal.");return}
+const total=subtotal-discount;
+const cash=Number($("cash").value);
+if(!Number.isFinite(cash)||cash<total){alert("Kulang ang cash na natanggap.");return}
+for(const c of cart){
+const p=products.find(x=>x.id===c.id);
+if(!p||p.stock<c.qty){alert("Nagbago ang stock. Suriin ang cart.");return}
+}
+const items=cart.map(c=>{
+const p=products.find(x=>x.id===c.id);
+return {id:p.id,name:p.name,qty:c.qty,price:p.price,cost:p.cost,
+lineTotal:p.price*c.qty,lineProfit:(p.price-p.cost)*c.qty};
+});
+items.forEach(i=>products.find(p=>p.id===i.id).stock-=i.qty);
+const sale={
+id:uid(),date:today(),time:new Date().toLocaleTimeString(),
+items,subtotal,discount,total,cash,change:cash-total,
+profit:items.reduce((s,i)=>s+i.lineProfit,0)-discount
+};
+sales.push(sale);
+persist();lastReceipt=sale;
+cart=[];$("cash").value="";$("discount").value="0";
+renderAll();printReceipt(sale);
+alert("Sale saved! Sukli: "+money(sale.change));
+}
+function renderProducts(){
+const root=$("productList");root.replaceChildren();
+const q=$("searchProducts").value.trim().toLowerCase();
+products.filter(p=>p.name.toLowerCase().includes(q)).forEach(p=>{
+const row=document.createElement("div");row.className="product";
+row.append(safeText("strong",p.name),
+safeText("div","Cost "+money(p.cost)+" • Price "+money(p.price)),
+safeText("div","Stock: "+p.stock,p.stock<5?"muted":"price"));
+const a=document.createElement("div");a.className="actions";
+const edit=safeText("button","Edit","gray");
+edit.onclick=()=>editProduct(p.id);
+const del=safeText("button","Delete","red");
+del.onclick=()=>deleteProduct(p.id);
+a.append(edit,del);row.append(a);root.append(row);
+});
+if(!root.children.length)root.textContent="Wala pang produkto.";
+}
+$("productForm").addEventListener("submit",e=>{
+e.preventDefault();
+const id=$("editId").value,name=$("pName").value.trim();
+const cost=Number($("pCost").value),price=Number($("pPrice").value),
+stock=Number($("pStock").value);
+if(!name||!Number.isFinite(cost)||cost<0||!Number.isFinite(price)||
+price<=0||!Number.isInteger(stock)||stock<0||stock>1000000){
+alert("Suriin ang product details.");return}
+if(id){
+const p=products.find(x=>x.id===id);
+if(p)Object.assign(p,{name,cost,price,stock});
+}else products.push({id:uid(),name,cost,price,stock});
+persist();resetForm();renderAll();
+});
+function editProduct(id){
+const p=products.find(x=>x.id===id);if(!p)return;
+$("editId").value=p.id;$("pName").value=p.name;
+$("pCost").value=p.cost;$("pPrice").value=p.price;$("pStock").value=p.stock;
+$("formTitle").textContent="Edit Product";
+window.scrollTo({top:0,behavior:"smooth"});
+}
+function resetForm(){
+$("productForm").reset();$("editId").value="";
+$("formTitle").textContent="Add Product";
+}
+function deleteProduct(id){
+const p=products.find(x=>x.id===id);
+if(!p||!confirm("Burahin ang "+p.name+"? Historical sales remain."))return;
+products=products.filter(x=>x.id!==id);cart=cart.filter(x=>x.id!==id);
+persist();renderAll();
+}
+function renderSales(){
+const root=$("salesList");root.replaceChildren();
+const date=$("salesDate").value;
+const list=[...sales].reverse().filter(s=>!date||s.date===date);
+if(!list.length){root.textContent="Wala pang sales sa date na ito.";return}
+list.forEach(s=>{
+const row=document.createElement("div");row.className="sale";
+row.append(safeText("strong",money(s.total)+" • "+s.date),
+safeText("div",s.time+" • "+s.items.map(i=>i.name+" × "+i.qty).join(", ")));
+const b=safeText("button","Print Receipt","gray");
+b.onclick=()=>printReceipt(s);row.append(b);root.append(row);
+});
+}
+function clearSalesFilter(){$("salesDate").value="";renderSales()}
+function renderReports(){
+const d=$("reportDate").value||today();
+const list=sales.filter(s=>s.date===d);
+$("rSales").textContent=money(list.reduce((n,s)=>n+s.total,0));
+$("rDiscount").textContent=money(list.reduce((n,s)=>n+s.discount,0));
+$("rProfit").textContent=money(list.reduce((n,s)=>n+s.profit,0));
+$("rCount").textContent=list.length;
+}
+function renderAll(){renderPOS();renderProducts();renderSales();renderReports()}
+function printReceipt(s){
+lastReceipt=s;
+const root=$("receiptPrint");root.replaceChildren();
+root.append(safeText("h2","NegosyoMate POS"));
+root.append(safeText("p","Receipt: "+s.id));
+root.append(safeText("p",s.date+" "+s.time));
+root.append(safeText("p","------------------------------"));
+s.items.forEach(i=>root.append(safeText("p",
+i.name+" × "+i.qty+" @ "+money(i.price)+" = "+money(i.lineTotal))));
+root.append(safeText("p","Subtotal: "+money(s.subtotal)));
+root.append(safeText("p","Discount: "+money(s.discount)));
+root.append(safeText("h3","TOTAL: "+money(s.total)));
+root.append(safeText("p","Cash: "+money(s.cash)));
+root.append(safeText("p","Change: "+money(s.change)));
+root.append(safeText("p","Salamat sa pagbili!"));
+window.print();
+}
+function exportData(){
+const blob=new Blob([JSON.stringify({version:1,products,sales},null,2)],
+{type:"application/json"});
+const url=URL.createObjectURL(blob);
+const a=document.createElement("a");a.href=url;
+a.download="negosyomate-backup-"+today()+".json";a.click();
+URL.revokeObjectURL(url);
+}
+async function importData(){
+const file=$("backupFile").files[0];if(!file){alert("Pumili muna ng backup file.");return}
+try{
+const x=JSON.parse(await file.text());
+if(x.version!==1||!Array.isArray(x.products)||!Array.isArray(x.sales))
+throw Error("Invalid backup");
+if(!x.products.every(p=>typeof p.name==="string"&&
+Number.isFinite(p.price)&&Number.isFinite(p.cost)&&
+Number.isInteger(p.stock)&&p.stock>=0))
+throw Error("Invalid product data");
+if(!x.sales.every(s=>typeof s.id==="string"&&Array.isArray(s.items)&&
+Number.isFinite(s.total)&&typeof s.date==="string"))
+throw Error("Invalid sales data");
+if(!confirm("Palitan ang lahat ng kasalukuyang local data?"))return;
+products=x.products;sales=x.sales;cart=[];persist();renderAll();
+alert("Backup restored.");
+}catch{alert("Hindi valid ang backup file.");}
+}
+function resetAll(){
+if(!confirm("Sigurado? Buburahin ang lahat ng products at sales sa browser na ito."))return;
+if(!confirm("Huling kumpirmasyon: na-export mo na ba ang backup?"))return;
+products=[];sales=[];cart=[];
+persist();renderAll();alert("Local data cleared.");
+}
+$("reportDate").value=today();
+renderAll();
+</script>
+</body>
+</html>
