@@ -130,125 +130,94 @@ function restoreBackup(e){if(role!=='admin')return;let f=e.target.files[0];if(!f
 function exportCSV(){if(role!=='admin')return;let rows=[['Receipt','Date','Items','Subtotal','Discount','Total','Cash','Change','Profit'],...sales.map(s=>[s.id,dateText(s.date),s.items.reduce((n,i)=>n+i.qty,0),s.subtotal,s.discount,s.total,s.cash,s.change,s.profit])];download('negosyomate-sales.csv','\ufeff'+rows.map(r=>r.map(v=>'"'+String(v??'').replace(/"/g,'""')+'"').join(',')).join('\r\n'),'text/csv;charset=utf-8')}
 function clearAll(){if(role!=='admin')return;if(!confirm('Burahin lahat ng products at sales?'))return;products=[];sales=[];cart={};save();renderAll();toast('Nabura ang records.')}
 renderAll();
-
-/* NegosyoMate POS keyboard shortcuts */
+ 
+/* NegosyoMate POS keyboard shortcuts - browser friendly */
 let selectedProductIndex = -1;
 
-document.addEventListener('keydown', function (e) {
+document.addEventListener("keydown", function (e) {
   const el = document.activeElement;
-  const tag = el && el.tagName;
-  const modalOpen = document.querySelector('.modalbg.open') !== null;
-  const loginVisible = !$('loginScreen').classList.contains('hidden');
+  const tag = el?.tagName;
+  const typing = ["INPUT", "TEXTAREA", "SELECT"].includes(tag);
+  const modalOpen = document.querySelector(".modalbg.open") !== null;
+  const searchShortcut = (e.altKey && e.key.toLowerCase() === "s");
 
-  // Escape closes open dialogs first.
-  if (e.key === 'Escape') {
-    if ($('productModal').classList.contains('open')) closeProduct();
-    if ($('receiptModal').classList.contains('open')) closeReceipt();
+  if (e.key === "Escape") {
+    if ($("productModal")?.classList.contains("open")) closeProduct();
+    if ($("receiptModal")?.classList.contains("open")) closeReceipt();
     return;
   }
 
-  // Enter submits login only once.
-  if (loginVisible) {
-    if (e.key === 'Enter' && el && el.id === 'pinInput') {
-      e.preventDefault();
-      login();
-    }
+  if (!$("loginScreen").classList.contains("hidden")) {
+    if (e.key === "Enter" && el?.id === "pinInput") login();
     return;
   }
 
-  if ($('app').classList.contains('hidden') || modalOpen) return;
+  if ($("app").classList.contains("hidden") || modalOpen) return;
 
-  // F2 or Ctrl+K: open POS first, then focus product search.
-  // This also works when an Admin is currently on the Dashboard.
-  if (e.key === 'F2' || e.code === 'F2' || (e.ctrlKey && e.key.toLowerCase() === 'k')) {
+  // Alt+S works from any app page and does not require F2 or Fn.
+  if (searchShortcut) {
     e.preventDefault();
-    if (page !== 'pos') go('pos');
-    $('search').focus();
-    $('search').select();
+    go("pos");
+    setTimeout(() => {
+      const search = $("search");
+      if (search) { search.focus(); search.select(); }
+    }, 0);
     return;
   }
 
-  if (page !== 'pos') return;
+  // Other POS shortcuts only apply while on the POS page.
+  if (page !== "pos") return;
 
-  const cards = Array.from(document.querySelectorAll('#productGrid .product'));
+  // Don't hijack normal typing or arrow keys inside form fields.
+  if (typing && !["F4", "F6", "F8", "F10"].includes(e.key)) return;
 
-  // F4: focus cash received.
-  if (e.key === 'F4') {
+  const cards = [...document.querySelectorAll("#productGrid .product")];
+
+  if (e.key === "F2") {
     e.preventDefault();
-    $('cash').focus();
-    $('cash').select();
+    const search = $("search");
+    if (search) { search.focus(); search.select(); }
     return;
   }
 
-  // F6: focus discount.
-  if (e.key === 'F6') {
+  if (e.key === "F4") {
+    e.preventDefault(); $("cash").focus(); $("cash").select(); return;
+  }
+  if (e.key === "F6") {
+    e.preventDefault(); $("discount").focus(); $("discount").select(); return;
+  }
+  if (e.key === "F8") {
     e.preventDefault();
-    $('discount').focus();
-    $('discount').select();
+    if (el?.id !== "cash") { $("cash").focus(); $("cash").select(); }
+    else $("checkoutBtn").click();
     return;
   }
-
-  // F8: go to cash; press again while in cash to checkout.
-  if (e.key === 'F8') {
+  if (e.key === "F10") {
     e.preventDefault();
-    if (!el || el.id !== 'cash') {
-      $('cash').focus();
-      $('cash').select();
-    } else {
-      $('checkoutBtn').click();
-    }
+    if (confirm("I-clear ang kasalukuyang order?")) { clearCart(); $("search").focus(); }
     return;
   }
 
-  // F10: clear current order.
-  if (e.key === 'F10') {
-    e.preventDefault();
-    if (confirm('I-clear ang kasalukuyang order?')) {
-      clearCart();
-      $('search').focus();
-    }
-    return;
-  }
-
-  // Arrow keys move through product cards. From search or another field,
-  // start at the first product (or last for ArrowUp/ArrowLeft).
-  if (['ArrowRight', 'ArrowLeft', 'ArrowDown', 'ArrowUp'].includes(e.key)) {
+  if (["ArrowRight", "ArrowLeft", "ArrowDown", "ArrowUp"].includes(e.key)) {
     if (!cards.length) return;
     e.preventDefault();
-    cards.forEach(card => card.setAttribute('tabindex', '0'));
-
-    const currentIndex = cards.indexOf(el);
-    const columns = Math.max(1, getComputedStyle($('productGrid')).gridTemplateColumns
-      .split(' ').filter(Boolean).length);
-
-    if (currentIndex < 0) {
-      selectedProductIndex = (e.key === 'ArrowUp' || e.key === 'ArrowLeft')
-        ? cards.length - 1 : 0;
-    } else {
-      selectedProductIndex = currentIndex;
-      if (e.key === 'ArrowRight') selectedProductIndex = Math.min(cards.length - 1, currentIndex + 1);
-      if (e.key === 'ArrowLeft') selectedProductIndex = Math.max(0, currentIndex - 1);
-      if (e.key === 'ArrowDown') selectedProductIndex = Math.min(cards.length - 1, currentIndex + columns);
-      if (e.key === 'ArrowUp') selectedProductIndex = Math.max(0, currentIndex - columns);
+    cards.forEach(card => card.setAttribute("tabindex", "0"));
+    if (!cards.includes(el)) selectedProductIndex = 0;
+    else {
+      selectedProductIndex = cards.indexOf(el);
+      const columns = Math.max(1, getComputedStyle($("productGrid")).gridTemplateColumns.split(" ").length);
+      if (e.key === "ArrowRight") selectedProductIndex++;
+      if (e.key === "ArrowLeft") selectedProductIndex--;
+      if (e.key === "ArrowDown") selectedProductIndex += columns;
+      if (e.key === "ArrowUp") selectedProductIndex -= columns;
     }
+    selectedProductIndex = Math.max(0, Math.min(cards.length - 1, selectedProductIndex));
     cards[selectedProductIndex].focus();
     return;
   }
-
-  // Enter adds the focused product to the order.
-  if (e.key === 'Enter' && cards.includes(el)) {
-    e.preventDefault();
-    el.click();
-    return;
-  }
-
-  // Enter while editing the cash amount attempts checkout.
-  if (e.key === 'Enter' && el && el.id === 'cash') {
-    e.preventDefault();
-    $('checkoutBtn').click();
-  }
-}, true);
-
+  if (e.key === "Enter" && cards.includes(el)) { e.preventDefault(); el.click(); return; }
+  if (e.key === "Enter" && el?.id === "cash") { e.preventDefault(); $("checkoutBtn").click(); }
+});
 </script>
 </body>
 </html>
