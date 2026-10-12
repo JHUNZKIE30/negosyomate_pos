@@ -157,17 +157,20 @@ document.addEventListener('keydown', function (e) {
   }
 
   if ($('app').classList.contains('hidden') || modalOpen) return;
-  if (page !== 'pos') return;
 
-  const cards = Array.from(document.querySelectorAll('#productGrid .product'));
-
-  // F2 or Ctrl+K: focus product search.
-  if (e.key === 'F2' || (e.ctrlKey && e.key.toLowerCase() === 'k')) {
+  // F2 or Ctrl+K: open POS first, then focus product search.
+  // This also works when an Admin is currently on the Dashboard.
+  if (e.key === 'F2' || e.code === 'F2' || (e.ctrlKey && e.key.toLowerCase() === 'k')) {
     e.preventDefault();
+    if (page !== 'pos') go('pos');
     $('search').focus();
     $('search').select();
     return;
   }
+
+  if (page !== 'pos') return;
+
+  const cards = Array.from(document.querySelectorAll('#productGrid .product'));
 
   // F4: focus cash received.
   if (e.key === 'F4') {
@@ -244,7 +247,7 @@ document.addEventListener('keydown', function (e) {
     e.preventDefault();
     $('checkoutBtn').click();
   }
-});
+}, true);
 
 </script>
 </body>
