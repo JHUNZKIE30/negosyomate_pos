@@ -46,7 +46,7 @@
   </section>
 
   <section class="view" id="v-pos">
-   <div class="poslayout"><div><div class="toolbar"><input class="field" id="search" placeholder="🔎 Hanapin ang produkto..." oninput="renderPos()"><select class="field" id="category" onchange="renderPos()"><option value="">Lahat ng kategorya</option></select></div><div class="products" id="productGrid"></div></div>
+   <div class="poslayout"><div><div class="toolbar"><input class="field" id="search" placeholder="🔎 Hanapin ang produkto..." oninput="renderPos()"><button type="button" class="light" onclick="focusPosSearch()" title="Shortcut: Alt+S">Search (Alt+S)</button><select class="field" id="category" onchange="renderPos()"><option value="">Lahat ng kategorya</option></select></div><div class="products" id="productGrid"></div></div>
    <div class="cart"><h2>🛒 Kasalukuyang order <span id="cartCount" class="muted"></span></h2><div id="cartItems"></div><div class="totalrow"><span>Subtotal</span><b id="subtotal">₱0.00</b></div><label class="muted">Discount (₱)<input class="field" type="number" min="0" id="discount" value="0" oninput="renderCart()"></label><div class="totalrow grand"><span>Total</span><span id="total">₱0.00</span></div><label class="muted">Cash na natanggap<input class="field" type="number" min="0" id="cash" placeholder="Hal. 500" oninput="renderCart()"></label><div class="totalrow"><span>Sukli</span><b id="change">₱0.00</b></div><button class="primary" id="checkoutBtn" onclick="checkout()">Kumpletuhin ang benta</button><button style="width:100%;margin-top:7px" onclick="clearCart()">I-clear ang order</button></div></div>
   </section>
 
@@ -132,6 +132,15 @@ function clearAll(){if(role!=='admin')return;if(!confirm('Burahin lahat ng produ
 renderAll();
  
 /* NegosyoMate POS keyboard shortcuts - browser friendly */
+function focusPosSearch() {
+  if ($("app").classList.contains("hidden")) return;
+  if (page !== "pos") go("pos");
+  const search = $("search");
+  if (search) {
+    search.focus();
+    search.select();
+  }
+}
 let selectedProductIndex = -1;
 
 document.addEventListener("keydown", function (e) {
@@ -139,7 +148,7 @@ document.addEventListener("keydown", function (e) {
   const tag = el?.tagName;
   const typing = ["INPUT", "TEXTAREA", "SELECT"].includes(tag);
   const modalOpen = document.querySelector(".modalbg.open") !== null;
-  const searchShortcut = (e.altKey && e.key.toLowerCase() === "s");
+  const searchShortcut = (e.altKey && e.key.toLowerCase() === "s") || (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === "s");
 
   if (e.key === "Escape") {
     if ($("productModal")?.classList.contains("open")) closeProduct();
@@ -157,11 +166,7 @@ document.addEventListener("keydown", function (e) {
   // Alt+S works from any app page and does not require F2 or Fn.
   if (searchShortcut) {
     e.preventDefault();
-    go("pos");
-    setTimeout(() => {
-      const search = $("search");
-      if (search) { search.focus(); search.select(); }
-    }, 0);
+    focusPosSearch();
     return;
   }
 
@@ -175,8 +180,7 @@ document.addEventListener("keydown", function (e) {
 
   if (e.key === "F2") {
     e.preventDefault();
-    const search = $("search");
-    if (search) { search.focus(); search.select(); }
+    focusPosSearch();
     return;
   }
 
