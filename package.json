@@ -15,6 +15,7 @@
   "build": {
     "appId": "com.negosyomate.pos",
     "productName": "NegosyoMate POS",
+     "publish": null,
     "files": [
       "index.html",
       "main.js",
