@@ -133,87 +133,124 @@ function clearAll(){if(role!=='admin')return;if(!confirm('Burahin lahat ng produ
 renderAll();
  
 /* NegosyoMate POS keyboard shortcuts */
-document.addEventListener("keydown", function (e) {
-  const tag = document.activeElement?.tagName;
-  const typing = ["INPUT", "TEXTAREA", "SELECT"].includes(tag);
-  const modalOpen =
-    document.querySelector(".modalbg.open") !== null;
 
-  // Escape: isara ang bukas na dialog
+/* NegosyoMate POS - Keyboard Only Mode */
+
+let selectedProductIndex = -1;
+
+document.addEventListener("keydown", function (e) {
+  const el = document.activeElement;
+  const tag = el?.tagName;
+  const typing = ["INPUT", "TEXTAREA", "SELECT"].includes(tag);
+  const modalOpen = document.querySelector(".modalbg.open") !== null;
+
+  // ESC: isara ang dialog
   if (e.key === "Escape") {
-    if ($("productModal").classList.contains("open")) {
-      closeProduct();
-    }
-    if ($("receiptModal").classList.contains("open")) {
-      closeReceipt();
-    }
+    if ($("productModal").classList.contains("open")) closeProduct();
+    if ($("receiptModal").classList.contains("open")) closeReceipt();
     return;
   }
 
-  // Gumagana ang mga POS shortcut kapag naka-login
-  if ($("app").classList.contains("hidden")) return;
-  if (role !== "cashier" && page !== "pos") return;
-  if (modalOpen) return;
+  // Enter sa login
+  if ($("loginScreen").classList.contains("hidden") === false) {
+    if (e.key === "Enter" && el.id === "pinInput") login();
+    return;
+  }
 
-  // F2: product search
-  if (e.key === "F2") {
+  if ($("app").classList.contains("hidden") || modalOpen) return;
+  if (role !== "cashier" && page !== "pos") return;
+
+  const cards = [...document.querySelectorAll("#productGrid .product")];
+
+  // F2 o Ctrl+K: hanap ng produkto
+  if (e.key === "F2" || (e.ctrlKey && e.key.toLowerCase() === "k")) {
     e.preventDefault();
     go("pos");
     $("search").focus();
     $("search").select();
+    return;
   }
 
-  // F4: cash payment
+  // F4: cash
   if (e.key === "F4") {
     e.preventDefault();
-    go("pos");
     $("cash").focus();
     $("cash").select();
+    return;
   }
 
   // F6: discount
   if (e.key === "F6") {
     e.preventDefault();
-    go("pos");
     $("discount").focus();
     $("discount").select();
+    return;
   }
 
-  // F8: checkout — may validation pa rin
+  // F8: unang pindot, pumunta sa cash;
+  // kapag nasa cash na, subukang mag-checkout
   if (e.key === "F8") {
     e.preventDefault();
-    if (document.activeElement?.id === "cash" || !typing) {
-      $("checkoutBtn").click();
-    } else {
+    if (el.id !== "cash") {
       $("cash").focus();
+      $("cash").select();
+    } else {
+      $("checkoutBtn").click();
     }
+    return;
   }
 
-  // F10: clear cart — may confirmation
+  // F10: clear order
   if (e.key === "F10") {
     e.preventDefault();
     if (confirm("I-clear ang kasalukuyang order?")) {
       clearCart();
       $("search").focus();
     }
+    return;
   }
 
-  // Ctrl+K: mabilisang product search
-  if (e.ctrlKey && e.key.toLowerCase() === "k") {
+  // Arrow keys: piliin ang produkto
+  if (["ArrowRight", "ArrowLeft", "ArrowDown", "ArrowUp"].includes(e.key)) {
+    if (!cards.length) return;
     e.preventDefault();
-    go("pos");
-    $("search").focus();
-    $("search").select();
-  }
-});
 
-// Enter sa cash field: subukang mag-checkout
-$("cash").addEventListener("keydown", function (e) {
-  if (e.key === "Enter") {
+    cards.forEach(card => card.setAttribute("tabindex", "0"));
+
+    if (!cards.includes(el)) {
+      selectedProductIndex = 0;
+    } else {
+      selectedProductIndex = cards.indexOf(el);
+      const columns = getComputedStyle($("productGrid"))
+        .gridTemplateColumns.split(" ").length;
+
+      if (e.key === "ArrowRight") selectedProductIndex++;
+      if (e.key === "ArrowLeft") selectedProductIndex--;
+      if (e.key === "ArrowDown") selectedProductIndex += columns;
+      if (e.key === "ArrowUp") selectedProductIndex -= columns;
+    }
+
+    selectedProductIndex = Math.max(
+      0, Math.min(cards.length - 1, selectedProductIndex)
+    );
+    cards[selectedProductIndex].focus();
+    return;
+  }
+
+  // Enter sa napiling produkto: idagdag sa order
+  if (e.key === "Enter" && cards.includes(el)) {
+    e.preventDefault();
+    el.click();
+    return;
+  }
+
+  // Enter sa cash: checkout
+  if (e.key === "Enter" && el.id === "cash") {
     e.preventDefault();
     $("checkoutBtn").click();
   }
 });
+
 </script>
 </body>
 </html>
