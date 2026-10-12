@@ -7,222 +7,129 @@
 <meta name="theme-color" content="#126b4f">
 <title>NegosyoMate POS</title>
 <style>
-:root{--g:#126b4f;--g2:#19845f;--bg:#f4f8f5;--line:#e3ebe5;--muted:#75837a;--white:#fff}
-*{box-sizing:border-box}
-body{margin:0;font:15px system-ui,Arial,sans-serif;background:var(--bg);color:#192a21}
-button,input,select{font:inherit}
-button{border:0;border-radius:10px;padding:11px 14px;cursor:pointer;font-weight:650}
-.primary{background:var(--g);color:white}
-.light{background:#e7f5ec;color:var(--g)}
-.danger{background:#ffeded;color:#b92e35}
-.layout{display:grid;grid-template-columns:225px 1fr;min-height:100vh}
-aside{background:white;border-right:1px solid var(--line);padding:22px 14px}
-.brand{display:flex;align-items:center;gap:10px;margin-bottom:25px;padding:0 8px}
-.logo{background:var(--g);color:white;width:43px;height:43px;border-radius:13px;display:grid;place-items:center;font-size:22px;font-weight:900}
-.brand b{font-size:17px}.brand small{display:block;color:var(--muted);font-size:11px}
-nav{display:grid;gap:7px}
-nav button{text-align:left;background:transparent;color:#66756b}
-nav button.active{background:#e7f5ec;color:var(--g)}
-main{padding:25px;max-width:1450px;width:100%;margin:auto;min-width:0}
-header{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:22px}
-h1{font-size:27px;margin:0}header p{margin:4px 0;color:var(--muted)}
-.view{display:none}.view.active{display:block}
-.cards{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:13px;margin-bottom:17px}
-.card,.panel,.product,.cart{background:white;border:1px solid var(--line);border-radius:16px;padding:17px}
-.card small,.muted{color:var(--muted)}
-.card strong{display:block;font-size:24px;margin:10px 0}
-.panel{margin-bottom:17px}
-.panel h2,.cart h2{font-size:17px;margin:0 0 14px}
-.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
-.toolbar{display:flex;gap:9px;flex-wrap:wrap;margin-bottom:14px}
-.field{padding:11px 12px;border:1px solid #dce6df;border-radius:10px;background:white;min-width:0;width:100%}
-.toolbar .field{flex:1;min-width:130px}
-.poslayout{display:grid;grid-template-columns:minmax(0,1fr) 310px;gap:15px;align-items:start}
-.products{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:11px}
-.product{cursor:pointer;padding:12px;transition:.15s}
-.product:hover{border-color:var(--g2)}
-.emoji{background:#edf7f0;border-radius:12px;display:grid;place-items:center;height:60px;font-size:30px;margin-bottom:10px}
-.product b{display:block;margin-bottom:5px}
-.price{color:var(--g);font-weight:800;font-size:17px}
-.product small{color:var(--muted)}
-.cart{position:sticky;top:12px}
-.cartitem{padding:12px 0;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:8px}
-.cartitem small{display:block;color:var(--muted);margin-top:4px}
-.qty{display:flex;gap:8px;align-items:center;margin-top:7px}
-.qty button{padding:3px 10px;background:#eaf5ed;color:var(--g)}
-.totalrow{display:flex;justify-content:space-between;gap:8px;margin:12px 0}
-.grand{font-size:21px;font-weight:850;border-top:1px solid var(--line);padding-top:12px}
-.cart>.primary{width:100%;margin-top:10px}
-.tablebox{overflow:auto;background:white;border:1px solid var(--line);border-radius:13px}
-table{width:100%;border-collapse:collapse;min-width:560px}
-th,td{text-align:left;padding:12px;border-bottom:1px solid var(--line);font-size:13px}
-th{background:#f7faf7;color:var(--muted)}
-.pill{background:#e7f5ec;color:var(--g);padding:4px 8px;border-radius:30px;font-size:12px}
-.pill.low{background:#fff0d8;color:#96630b}
-.empty{padding:25px;text-align:center;color:var(--muted)}
-.actions{display:flex;gap:6px;flex-wrap:wrap}
-.notice{padding:13px;background:#eaf6ee;border-radius:11px;color:var(--g);margin-bottom:12px}
-.bar{height:9px;background:#e9efeb;border-radius:20px;overflow:hidden;flex:1}
-.bar i{display:block;height:100%;background:var(--g2)}
-.barline{display:flex;align-items:center;gap:10px;margin:14px 0;font-size:13px}
-.modalbg{display:none;position:fixed;inset:0;background:#10251dcc;z-index:9;align-items:center;justify-content:center;padding:15px}
-.modalbg.open{display:flex}
-.modal{background:white;border-radius:18px;padding:22px;width:100%;max-width:440px;max-height:90vh;overflow:auto}
-.formgrid{display:grid;grid-template-columns:1fr 1fr;gap:11px}
-.formgrid label{font-size:13px;color:var(--muted)}
-.formgrid input{margin-top:6px}
-.formgrid .full{grid-column:1/-1}
-.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#182b21;color:white;border-radius:12px;padding:12px 17px;display:none;z-index:20}
-.toast.show{display:block}
-@media(max-width:950px){.cards{grid-template-columns:repeat(2,1fr)}.products{grid-template-columns:repeat(2,1fr)}.poslayout{grid-template-columns:1fr 290px}}
-@media(max-width:650px){.layout{display:block}aside{position:sticky;top:0;z-index:5;padding:10px;background:white;border-right:0;border-bottom:1px solid var(--line)}.brand{margin:0 0 8px}.logo{width:35px;height:35px}nav{display:flex;overflow-x:auto;gap:4px}nav button{white-space:nowrap;padding:9px;font-size:12px}main{padding:15px 11px}h1{font-size:23px}header{align-items:flex-start;flex-direction:column}.cards{gap:8px}.card{padding:12px}.card strong{font-size:20px}.poslayout,.grid2{grid-template-columns:1fr}.cart{position:static;order:2}.products{grid-template-columns:repeat(2,minmax(0,1fr))}.panel{padding:13px}.formgrid{grid-template-columns:1fr}.formgrid .full{grid-column:auto}}
+:root{--g:#126b4f;--g2:#19845f;--bg:#f4f8f5;--line:#e3ebe5;--muted:#738078;--red:#b8323b}
+*{box-sizing:border-box}body{margin:0;font:15px system-ui,Arial,sans-serif;background:var(--bg);color:#192a21}button,input,select{font:inherit}button{border:0;border-radius:10px;padding:11px 14px;cursor:pointer;font-weight:650}.primary{background:var(--g);color:white}.light{background:#e7f5ec;color:var(--g)}.danger{background:#ffeded;color:var(--red)}.field{width:100%;padding:12px;border:1px solid #dce6df;border-radius:10px;background:white;margin-top:6px}.muted{color:var(--muted)}.hidden{display:none!important}
+.login{min-height:100vh;display:grid;place-items:center;padding:20px;background:linear-gradient(135deg,#e7f5ec,#f6faf7)}.loginbox{background:white;border:1px solid var(--line);border-radius:22px;padding:28px;width:100%;max-width:390px;box-shadow:0 20px 60px #17432a12}.logo{height:54px;width:54px;border-radius:16px;background:var(--g);color:white;display:grid;place-items:center;font-size:25px;font-weight:900}.login h1{margin-bottom:4px}.login p{color:var(--muted)}.rolebuttons{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:18px 0}.rolebuttons button{background:#f0f5f1;color:#46574b}.rolebuttons button.selected{background:var(--g);color:white}.loginbox label{display:block;margin-top:12px;font-weight:650;font-size:13px}.loginbox .primary{width:100%;margin-top:18px}
+.app{display:grid;grid-template-columns:220px 1fr;min-height:100vh}.side{background:white;border-right:1px solid var(--line);padding:20px 13px}.brand{display:flex;align-items:center;gap:9px;margin:0 6px 24px}.brand .logo{height:40px;width:40px;font-size:20px}.brand small{display:block;color:var(--muted);font-size:11px}.nav{display:grid;gap:6px}.nav button{text-align:left;background:transparent;color:#5e6d63}.nav button.active{background:#e7f5ec;color:var(--g)}.sidefoot{margin-top:30px;padding:12px;background:#f5f9f6;border-radius:12px;font-size:12px;color:var(--muted)}main{padding:24px;min-width:0;max-width:1400px;width:100%;margin:auto}.top{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:20px}.top h1{margin:0;font-size:26px}.top p{margin:4px 0;color:var(--muted)}.view{display:none}.view.active{display:block}.cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-bottom:16px}.card,.panel,.product,.cart{background:white;border:1px solid var(--line);border-radius:15px;padding:16px}.card small{color:var(--muted)}.card strong{display:block;font-size:23px;margin:8px 0}.panel{margin-bottom:16px}.panel h2,.cart h2{font-size:17px;margin:0 0 13px}.toolbar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:13px}.toolbar .field{flex:1;min-width:130px;margin:0}.poslayout{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:14px;align-items:start}.products{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}.product{padding:12px;cursor:pointer}.product:hover{border-color:var(--g2)}.emoji{height:54px;background:#edf7f0;border-radius:11px;display:grid;place-items:center;font-size:28px;margin-bottom:9px}.product b{display:block;font-size:14px}.price{color:var(--g);font-weight:800;margin:5px 0}.product small{color:var(--muted)}.cart{position:sticky;top:12px}.cartitem{display:flex;justify-content:space-between;gap:8px;padding:11px 0;border-bottom:1px solid var(--line)}.cartitem small{display:block;color:var(--muted)}.qty{display:flex;align-items:center;gap:8px;margin-top:6px}.qty button{padding:3px 9px;background:#e7f5ec;color:var(--g)}.totalrow{display:flex;justify-content:space-between;gap:8px;margin:12px 0}.grand{border-top:1px solid var(--line);padding-top:12px;font-size:21px;font-weight:850}.cart>.primary{width:100%;margin-top:8px}.tablebox{overflow:auto;border:1px solid var(--line);border-radius:12px;background:white}table{border-collapse:collapse;width:100%;min-width:560px}th,td{text-align:left;padding:12px;border-bottom:1px solid var(--line);font-size:13px}th{background:#f6faf7;color:var(--muted)}.empty{text-align:center;color:var(--muted);padding:24px}.pill{border-radius:20px;background:#e7f5ec;color:var(--g);padding:4px 8px;font-size:12px}.pill.low{background:#fff0d8;color:#94600b}.notice{background:#eaf6ee;color:var(--g);padding:12px;border-radius:10px;margin-bottom:12px}.actions{display:flex;gap:7px;flex-wrap:wrap}.modalbg{display:none;position:fixed;inset:0;background:#10251dcc;z-index:9;align-items:center;justify-content:center;padding:15px}.modalbg.open{display:flex}.modal{background:white;border-radius:18px;padding:22px;width:100%;max-width:440px;max-height:90vh;overflow:auto}.formgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.formgrid label{font-size:13px;color:var(--muted)}.formgrid .field{margin-bottom:5px}.full{grid-column:1/-1}.toast{display:none;position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:#192a21;color:white;padding:12px 18px;border-radius:12px;z-index:20;max-width:90%}.toast.show{display:block}
+@media(max-width:900px){.cards{grid-template-columns:repeat(2,1fr)}.products{grid-template-columns:repeat(2,1fr)}.poslayout{grid-template-columns:1fr 280px}}
+@media(max-width:650px){.app{display:block}.side{position:sticky;top:0;z-index:5;padding:9px;background:white}.brand{margin:0 4px 8px}.brand .logo{height:34px;width:34px}.nav{display:flex;overflow-x:auto}.nav button{white-space:nowrap;padding:9px;font-size:12px}.sidefoot{display:none}main{padding:14px 10px}.top{align-items:flex-start;flex-direction:column}.top h1{font-size:23px}.poslayout{grid-template-columns:1fr}.cart{position:static}.products{grid-template-columns:repeat(2,minmax(0,1fr))}.card{padding:12px}.card strong{font-size:20px}.panel{padding:13px}.formgrid{grid-template-columns:1fr}.full{grid-column:auto}}
+@media print{body *{visibility:hidden!important}#receiptPrint,#receiptPrint *{visibility:visible!important}#receiptPrint{position:absolute;top:0;left:0;width:100%;padding:12px}}
 </style>
 </head>
 <body>
-<div class="layout">
-<aside>
- <div class="brand"><div class="logo">N</div><div><b>NegosyoMate</b><small>POINT OF SALE</small></div></div>
- <nav id="nav">
-  <button class="active" data-v="dashboard">▦ Dashboard</button>
-  <button data-v="pos">🛒 Cashier / POS</button>
-  <button data-v="products">▣ Products</button>
-  <button data-v="sales">▤ Sales History</button>
-  <button data-v="reports">▥ Reports</button>
-  <button data-v="settings">⚙ Settings</button>
- </nav>
-</aside>
-<main>
-<header><div><h1 id="title">Dashboard</h1><p id="subtitle">Maligayang pagdating sa iyong negosyo!</p></div><button class="primary" onclick="go('pos')">＋ Bagong Benta</button></header>
 
-<section class="view active" id="dashboard">
- <div class="cards" id="stats"></div>
- <div class="grid2">
-  <div class="panel"><h2>Benta sa nakaraang 7 araw</h2><div id="chart"></div></div>
-  <div class="panel"><h2>Top Products</h2><div id="tops"></div></div>
- </div>
- <div class="panel"><h2>Pinakabagong mga benta</h2><div id="recent"></div></div>
-</section>
-
-<section class="view" id="pos">
- <div class="poslayout">
-  <div>
-   <div class="toolbar"><input id="search" class="field" placeholder="🔎 Hanapin ang produkto..." oninput="renderPos()"><select id="cat" class="field" onchange="renderPos()"><option value="">Lahat ng kategorya</option></select></div>
-   <div class="products" id="productGrid"></div>
-  </div>
-  <div class="cart">
-   <h2>🛒 Iyong Order <span id="cartCount" class="muted"></span></h2>
-   <div id="cartItems"></div>
-   <div class="totalrow"><span class="muted">Subtotal</span><b id="subtotal">₱0.00</b></div>
-   <label class="muted">Discount (₱)<input class="field" type="number" min="0" id="discount" value="0" oninput="renderCart()"></label>
-   <div class="totalrow grand"><span>Total</span><span id="total">₱0.00</span></div>
-   <label class="muted">Cash na natanggap<input class="field" id="cash" type="number" min="0" placeholder="Hal. 500" oninput="renderCart()"></label>
-   <div class="totalrow"><span>Sukli</span><b id="change">₱0.00</b></div>
-   <button class="primary" id="checkout" onclick="checkout()">Kumpletuhin ang Benta</button>
-   <button style="width:100%;margin-top:7px" onclick="clearCart()">I-clear ang order</button>
-  </div>
+<section class="login" id="loginScreen">
+ <div class="loginbox">
+  <div class="logo">N</div>
+  <h1>NegosyoMate</h1><p>Mag-login para magpatuloy sa iyong negosyo.</p>
+  <div class="rolebuttons"><button id="adminChoice" class="selected" onclick="chooseRole('admin')">🛡️ Admin</button><button id="cashierChoice" onclick="chooseRole('cashier')">🛒 Cashier</button></div>
+  <label id="pinLabel">Admin PIN</label>
+  <input class="field" id="pinInput" type="password" inputmode="numeric" maxlength="12" placeholder="Ilagay ang PIN" autocomplete="off">
+  <button class="primary" onclick="login()">Mag-login →</button>
+  <p style="font-size:12px">Unang setup: Admin PIN <b>1234</b> · Cashier PIN <b>0000</b></p>
+  <p style="font-size:11px">Local-storage demo: ang PIN ay para sa simpleng role separation lamang, hindi server-secured authentication.</p>
  </div>
 </section>
 
-<section class="view" id="products">
- <div class="panel"><div class="toolbar"><input class="field" id="prodSearch" placeholder="Hanapin ang produkto..." oninput="renderProducts()"><button class="primary" onclick="openForm()">＋ Magdagdag</button></div><div id="prodTable"></div></div>
-</section>
+<div class="app hidden" id="app">
+ <aside class="side">
+  <div class="brand"><div class="logo">N</div><div><b>NegosyoMate</b><small id="roleLabel">ADMIN PANEL</small></div></div>
+  <nav class="nav" id="nav"></nav>
+  <div class="sidefoot">🟢 Local device mode<br>Mag-backup ng records araw-araw.</div>
+ </aside>
+ <main>
+  <header class="top"><div><h1 id="pageTitle">Dashboard</h1><p id="pageSub">Buod ng iyong negosyo</p></div><button class="danger" onclick="logout()">Mag-logout</button></header>
 
-<section class="view" id="sales">
- <div class="panel"><div class="toolbar"><input class="field" type="date" id="dateFilter" onchange="renderSales()"><input class="field" id="saleSearch" placeholder="Hanapin ang resibo..." oninput="renderSales()"><button class="light" onclick="exportCSV()">Export CSV</button></div><div id="salesTable"></div></div>
-</section>
+  <section class="view active" id="v-dashboard">
+   <div class="cards" id="stats"></div>
+   <div class="panel"><h2>Benta sa nakaraang 7 araw</h2><div id="chart"></div></div>
+   <div class="panel"><h2>Pinakabagong benta</h2><div id="recent"></div></div>
+  </section>
 
-<section class="view" id="reports">
- <div class="cards" id="reportStats"></div>
- <div class="grid2"><div class="panel"><h2>Inventory Status</h2><div id="inventory"></div></div><div class="panel"><h2>Mga Paalala</h2><div id="alerts"></div></div></div>
- <div class="panel"><h2>Sales Report</h2><div id="reportSales"></div></div>
-</section>
+  <section class="view" id="v-pos">
+   <div class="poslayout"><div><div class="toolbar"><input class="field" id="search" placeholder="🔎 Hanapin ang produkto..." oninput="renderPos()"><select class="field" id="category" onchange="renderPos()"><option value="">Lahat ng kategorya</option></select></div><div class="products" id="productGrid"></div></div>
+   <div class="cart"><h2>🛒 Kasalukuyang order <span id="cartCount" class="muted"></span></h2><div id="cartItems"></div><div class="totalrow"><span>Subtotal</span><b id="subtotal">₱0.00</b></div><label class="muted">Discount (₱)<input class="field" type="number" min="0" id="discount" value="0" oninput="renderCart()"></label><div class="totalrow grand"><span>Total</span><span id="total">₱0.00</span></div><label class="muted">Cash na natanggap<input class="field" type="number" min="0" id="cash" placeholder="Hal. 500" oninput="renderCart()"></label><div class="totalrow"><span>Sukli</span><b id="change">₱0.00</b></div><button class="primary" id="checkoutBtn" onclick="checkout()">Kumpletuhin ang benta</button><button style="width:100%;margin-top:7px" onclick="clearCart()">I-clear ang order</button></div></div>
+  </section>
 
-<section class="view" id="settings">
- <div class="panel"><h2>Data Backup</h2><p class="muted">I-download ang products at sales mo bilang JSON file. Mag-backup nang regular.</p><button class="primary" onclick="backup()">↓ Download Backup</button></div>
- <div class="panel"><h2>Restore Backup</h2><p class="muted">Ibalik ang data mula sa naunang NegosyoMate backup. Papalitan nito ang kasalukuyang records.</p><input type="file" id="restore" accept=".json,application/json" class="field" onchange="restoreBackup(event)"></div>
- <div class="panel"><h2>Impormasyon</h2><div class="notice">Ang data ay naka-save sa browser ng device na ito. Hindi ito awtomatikong nagsi-sync sa ibang device. Huwag i-clear ang browser data nang walang backup.</div><p>NegosyoMate POS • Local storage • Philippine Peso (PHP)</p><button class="danger" onclick="clearAll()">Burahin ang lahat ng data</button></div>
-</section>
-</main>
+  <section class="view" id="v-products"><div class="panel"><div class="toolbar"><input class="field" id="productSearch" placeholder="Hanapin ang produkto..." oninput="renderProducts()"><button class="primary" onclick="openProduct()">＋ Add Product</button></div><div id="productTable"></div></div></section>
+  <section class="view" id="v-sales"><div class="panel"><div class="toolbar"><input class="field" type="date" id="salesDate" onchange="renderSales()"><input class="field" id="salesSearch" placeholder="Hanapin ang resibo..." oninput="renderSales()"></div><div id="salesTable"></div></div></section>
+  <section class="view" id="v-reports"><div class="cards" id="reportStats"></div><div class="panel"><h2>Inventory at low stock</h2><div id="inventoryReport"></div></div><div class="panel"><h2>Sales report</h2><button class="light" onclick="exportCSV()">Export CSV</button><div id="reportTable" style="margin-top:12px"></div></div></section>
+  <section class="view" id="v-settings"><div class="panel"><h2>Data backup</h2><p class="muted">I-download ang kopya ng products, sales at settings.</p><button class="primary" onclick="backup()">↓ Download backup (JSON)</button><h3>Restore backup</h3><input class="field" type="file" accept=".json,application/json" id="restoreFile" onchange="restoreBackup(event)"></div>
+   <div class="panel"><h2>PIN management</h2><p class="muted">Palitan ang Admin at Cashier PIN. Gumamit ng PIN na mahirap hulaan.</p><label>Bagong Admin PIN<input class="field" id="newAdminPin" type="password" inputmode="numeric" maxlength="12"></label><label>Bagong Cashier PIN<input class="field" id="newCashierPin" type="password" inputmode="numeric" maxlength="12"></label><button class="primary" style="margin-top:12px" onclick="changePins()">I-save ang bagong PIN</button></div>
+   <div class="panel"><h2>Danger zone</h2><button class="danger" onclick="clearAll()">Burahin ang lahat ng products at sales</button></div>
+  </section>
+ </main>
 </div>
 
-<div class="modalbg" id="productModal"><div class="modal"><h2 id="formTitle">Magdagdag ng Produkto</h2><form id="productForm" class="formgrid">
-<input type="hidden" id="pid">
+<div class="modalbg" id="productModal"><div class="modal"><h2 id="formTitle">Add Product</h2><form id="productForm" class="formgrid">
+<input type="hidden" id="editId">
 <label>Pangalan<input class="field" id="pname" required maxlength="80"></label>
-<label>Kategorya<input class="field" id="pcat" required maxlength="40" placeholder="Grocery"></label>
-<label>Presyo (₱)<input class="field" id="pprice" required type="number" min=".01" step=".01"></label>
+<label>Kategorya<input class="field" id="pcat" required maxlength="40"></label>
+<label>Presyo (₱)<input class="field" id="pprice" type="number" min=".01" step=".01" required></label>
 <label>Capital (₱)<input class="field" id="pcost" type="number" min="0" step=".01" value="0"></label>
-<label>Stock<input class="field" id="pstock" type="number" min="0" step="1" required value="0"></label>
+<label>Stock<input class="field" id="pstock" type="number" min="0" step="1" value="0" required></label>
 <label>Emoji<input class="field" id="pemoji" maxlength="8" placeholder="🛍️"></label>
-<div class="full actions"><button class="primary" type="submit">I-save</button><button type="button" onclick="closeForm()">Kanselahin</button></div>
+<div class="full actions"><button class="primary" type="submit">I-save</button><button type="button" onclick="closeProduct()">Kanselahin</button></div>
 </form></div></div>
-<div class="modalbg" id="receiptModal"><div class="modal" id="receipt"></div></div>
-<div id="toast" class="toast"></div>
+<div class="modalbg" id="receiptModal"><div class="modal"><div id="receiptPrint"></div><div class="actions"><button class="primary" onclick="window.print()">I-print ang resibo</button><button onclick="closeReceipt()">Isara</button></div></div></div>
+<div class="toast" id="toast"></div>
 
 <script>
-const PK='nm_products_v1',SK='nm_sales_v1';
+const K_PRODUCTS='nm_products_v2',K_SALES='nm_sales_v2',K_ADMIN='nm_admin_pin_v2',K_CASHIER='nm_cashier_pin_v2';
 const seed=[
-{id:'a1',name:'Instant Noodles',category:'Grocery',price:15,cost:10,stock:40,emoji:'🍜'},
-{id:'a2',name:'Bottled Water',category:'Drinks',price:20,cost:10,stock:30,emoji:'💧'},
-{id:'a3',name:'Potato Chips',category:'Snacks',price:18,cost:12,stock:25,emoji:'🍟'},
-{id:'a4',name:'Sardines',category:'Canned Goods',price:28,cost:21,stock:20,emoji:'🥫'},
-{id:'a5',name:'Bath Soap',category:'Personal Care',price:25,cost:17,stock:18,emoji:'🧼'},
-{id:'a6',name:'Soft Drink',category:'Drinks',price:25,cost:15,stock:24,emoji:'🥤'},
-{id:'a7',name:'Biscuits',category:'Snacks',price:10,cost:6,stock:35,emoji:'🍪'},
-{id:'a8',name:'Rice (1 kg)',category:'Grocery',price:60,cost:48,stock:50,emoji:'🍚'}
+{id:'p1',name:'Instant Noodles',category:'Grocery',price:15,cost:10,stock:40,emoji:'🍜'},
+{id:'p2',name:'Bottled Water',category:'Drinks',price:20,cost:10,stock:30,emoji:'💧'},
+{id:'p3',name:'Potato Chips',category:'Snacks',price:18,cost:12,stock:25,emoji:'🍟'},
+{id:'p4',name:'Sardines',category:'Canned Goods',price:28,cost:21,stock:20,emoji:'🥫'},
+{id:'p5',name:'Bath Soap',category:'Personal Care',price:25,cost:17,stock:18,emoji:'🧼'},
+{id:'p6',name:'Soft Drink',category:'Drinks',price:25,cost:15,stock:24,emoji:'🥤'},
+{id:'p7',name:'Biscuits',category:'Snacks',price:10,cost:6,stock:35,emoji:'🍪'},
+{id:'p8',name:'Rice (1 kg)',category:'Grocery',price:60,cost:48,stock:50,emoji:'🍚'}
 ];
-function read(k,def){try{let x=localStorage.getItem(k);return x?JSON.parse(x):JSON.parse(JSON.stringify(def))}catch(e){return JSON.parse(JSON.stringify(def))}}
-let products=read(PK,seed),sales=read(SK,[]),cart={};
 const $=id=>document.getElementById(id);
-function save(){try{localStorage.setItem(PK,JSON.stringify(products));localStorage.setItem(SK,JSON.stringify(sales))}catch(e){alert('Hindi ma-save ang data. Maaaring puno ang storage ng browser. Mag-backup ng data.');}}
-function peso(n){return '₱'+Number(n||0).toLocaleString('en-PH',{minimumFractionDigits:2,maximumFractionDigits:2})}
+function read(k,f){try{let v=localStorage.getItem(k);return v===null?JSON.parse(JSON.stringify(f)):JSON.parse(v)}catch(e){return JSON.parse(JSON.stringify(f))}}
+let products=read(K_PRODUCTS,seed),sales=read(K_SALES,[]),adminPin=localStorage.getItem(K_ADMIN)||'1234',cashierPin=localStorage.getItem(K_CASHIER)||'0000',role='admin',loginRole='admin',cart={},page='dashboard';
+const pageInfo={dashboard:['Dashboard','Buod ng iyong negosyo'],pos:['Cashier POS','Pumili ng produkto at tumanggap ng bayad'],products:['Products','Pamahalaan ang products at stock'],sales:['Sales History','Lahat ng recorded transactions'],reports:['Reports','Sales at inventory reports'],settings:['Settings','PIN at data backup']};
+function money(n){return '₱'+Number(n||0).toLocaleString('en-PH',{minimumFractionDigits:2,maximumFractionDigits:2})}
 function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
-function keyDate(d=new Date()){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
+function day(d=new Date()){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
 function dateText(d){return new Date(d).toLocaleString('en-PH',{dateStyle:'medium',timeStyle:'short'})}
-function notify(s){$('toast').textContent=s;$('toast').classList.add('show');setTimeout(()=>$('toast').classList.remove('show'),2500)}
-const names={dashboard:['Dashboard','Maligayang pagdating sa iyong negosyo!'],pos:['Cashier / POS','Pumili ng produkto at tumanggap ng bayad.'],products:['Products','Pamahalaan ang produkto at stock.'],sales:['Sales History','Tingnan ang mga transaksyon.'],reports:['Reports','Tingnan ang sales at inventory.'],settings:['Settings','Backup at data management.']};
-function go(v){document.querySelectorAll('.view').forEach(x=>x.classList.toggle('active',x.id===v));document.querySelectorAll('nav button').forEach(x=>x.classList.toggle('active',x.dataset.v===v));$('title').textContent=names[v][0];$('subtitle').textContent=names[v][1];renderAll();window.scrollTo(0,0)}
-$('nav').onclick=e=>{let b=e.target.closest('[data-v]');if(b)go(b.dataset.v)};
-function totalOf(a,k){return a.reduce((s,x)=>s+Number(x[k]||0),0)}
-function today(){return sales.filter(s=>keyDate(new Date(s.date))===keyDate())}
-function renderAll(){renderDashboard();renderPos();renderProducts();renderSales();renderReports();categories()}
-function renderDashboard(){
-let t=today();
-$('stats').innerHTML=[['Benta Ngayon',peso(totalOf(t,'total'))],['Tantiyang Kita',peso(totalOf(t,'profit'))],['Transaksyon',t.length],['Kabuuang Benta',peso(totalOf(sales,'total'))]].map(x=>`<div class="card"><small>${x[0]}</small><strong>${x[1]}</strong><small>NegosyoMate POS</small></div>`).join('');
-let ds=[];for(let i=6;i>=0;i--){let d=new Date();d.setDate(d.getDate()-i);let k=keyDate(d);ds.push({label:d.toLocaleDateString('en',{weekday:'short'}),val:sales.filter(s=>keyDate(new Date(s.date))===k).reduce((n,s)=>n+s.total,0)})}
-let max=Math.max(1,...ds.map(x=>x.val));
-$('chart').innerHTML=ds.map(x=>`<div class="barline" style="margin-bottom:15px"><span style="width:35px">${x.label}</span><div class="bar"><i style="width:${x.val/max*100}%"></i></div><b>${peso(x.val)}</b></div>`).join('');
-let q={};sales.forEach(s=>s.items.forEach(i=>q[i.name]=(q[i.name]||0)+i.qty));let top=Object.entries(q).sort((a,b)=>b[1]-a[1]).slice(0,5),m=Math.max(1,...top.map(x=>x[1]));
-$('tops').innerHTML=top.length?top.map(x=>`<div class="barline"><span style="width:100px">${esc(x[0])}</span><div class="bar"><i style="width:${x[1]/m*100}%"></i></div><b>${x[1]}</b></div>`).join(''):'<div class="empty">Wala pang benta.</div>';
-$('recent').innerHTML=saleTable(sales.slice().sort((a,b)=>b.date-a.date).slice(0,5));
-}
-function categories(){let c=[...new Set(products.map(p=>p.category))];let old=$('cat').value;$('cat').innerHTML='<option value="">Lahat ng kategorya</option>'+c.map(x=>`<option>${esc(x)}</option>`).join('');$('cat').value=c.includes(old)?old:''}
-function renderPos(){let q=($('search').value||'').toLowerCase(),c=$('cat').value;let a=products.filter(p=>(p.name.toLowerCase().includes(q)||p.category.toLowerCase().includes(q))&&(!c||p.category===c));$('productGrid').innerHTML=a.length?a.map(p=>`<div class="product" onclick="add('${p.id}')"><div class="emoji">${esc(p.emoji||'🛍️')}</div><b>${esc(p.name)}</b><div class="price">${peso(p.price)}</div><small>${p.stock} stock · ${esc(p.category)}</small></div>`).join(''):'<div class="empty">Walang produktong nakita.</div>';renderCart()}
-function add(id){let p=products.find(p=>p.id===id);if(!p||cart[id]>=p.stock){notify('Kulang ang stock!');return}cart[id]=(cart[id]||0)+1;renderCart()}
-function qty(id,n){cart[id]=(cart[id]||0)+n;if(cart[id]<=0)delete cart[id];let p=products.find(p=>p.id===id);if(p&&cart[id]>p.stock)cart[id]=p.stock;renderCart()}
-function subTotal(){return Object.entries(cart).reduce((n,[id,q])=>n+(products.find(p=>p.id===id)?.price||0)*q,0)}
-function renderCart(){let entries=Object.entries(cart).filter(([id,q])=>q>0&&products.some(p=>p.id===id));$('cartCount').textContent=entries.length?'('+entries.reduce((n,x)=>n+x[1],0)+')':'';$('cartItems').innerHTML=entries.length?entries.map(([id,q])=>{let p=products.find(p=>p.id===id);return `<div class="cartitem"><div><b>${esc(p.name)}</b><small>${peso(p.price)} bawat isa</small><div class="qty"><button onclick="qty('${id}',-1)">−</button>${q}<button onclick="qty('${id}',1)">+</button></div></div><b>${peso(p.price*q)}</b></div>`}).join(''):'<div class="empty">Wala pang order.</div>';let sub=subTotal(),disc=Math.min(sub,Math.max(0,Number($('discount').value||0))),total=sub-disc,cash=Number($('cash').value||0);$('subtotal').textContent=peso(sub);$('total').textContent=peso(total);$('change').textContent=peso(Math.max(0,cash-total));$('checkout').disabled=!entries.length||cash<total}
+function save(){try{localStorage.setItem(K_PRODUCTS,JSON.stringify(products));localStorage.setItem(K_SALES,JSON.stringify(sales))}catch(e){alert('Hindi ma-save ang data. Mag-backup muna.')}} 
+function toast(t){$('toast').textContent=t;$('toast').classList.add('show');setTimeout(()=>$('toast').classList.remove('show'),2500)}
+function chooseRole(r){loginRole=r;$('adminChoice').classList.toggle('selected',r==='admin');$('cashierChoice').classList.toggle('selected',r==='cashier');$('pinLabel').textContent=r==='admin'?'Admin PIN':'Cashier PIN';$('pinInput').value='';$('pinInput').focus()}
+function login(){let entered=$('pinInput').value,expected=loginRole==='admin'?adminPin:cashierPin;if(entered!==expected){alert('Mali ang PIN. Subukan ulit.');$('pinInput').value='';return}role=loginRole;$('loginScreen').classList.add('hidden');$('app').classList.remove('hidden');$('roleLabel').textContent=role==='admin'?'ADMIN PANEL':'CASHIER POS';buildNav();go(role==='admin'?'dashboard':'pos');$('pinInput').value=''}
+$('pinInput').addEventListener('keydown',e=>{if(e.key==='Enter')login()});
+function logout(){cart={};$('app').classList.add('hidden');$('loginScreen').classList.remove('hidden');$('pinInput').value='';chooseRole('admin')}
+function buildNav(){let items=role==='admin'?[['dashboard','▦ Dashboard'],['products','▣ Products'],['sales','▤ Sales History'],['reports','▥ Reports'],['settings','⚙ Settings']]:[['pos','🛒 Cashier POS']];$('nav').innerHTML=items.map(([id,label])=>`<button data-page="${id}">${label}</button>`).join('');$('nav').querySelectorAll('button').forEach(b=>b.onclick=()=>go(b.dataset.page))}
+function guard(p){return role==='admin'||p==='pos'}
+function go(p){if(!guard(p)){toast('Wala kang permission sa page na ito.');return}page=p;document.querySelectorAll('.view').forEach(v=>v.classList.toggle('active',v.id==='v-'+p));$('nav').querySelectorAll('button').forEach(b=>b.classList.toggle('active',b.dataset.page===p));$('pageTitle').textContent=pageInfo[p][0];$('pageSub').textContent=pageInfo[p][1];renderAll();window.scrollTo(0,0)}
+function sum(a,k){return a.reduce((n,x)=>n+Number(x[k]||0),0)}
+function renderAll(){renderDashboard();renderPos();renderProducts();renderSales();renderReports();fillCategories()}
+function renderDashboard(){let t=sales.filter(s=>day(new Date(s.date))===day());$('stats').innerHTML=[['Benta Ngayon',money(sum(t,'total'))],['Tantiyang Kita',money(sum(t,'profit'))],['Transaksyon',t.length],['Kabuuang Benta',money(sum(sales,'total'))]].map(x=>`<div class="card"><small>${x[0]}</small><strong>${x[1]}</strong></div>`).join('');let ds=[];for(let i=6;i>=0;i--){let d=new Date();d.setDate(d.getDate()-i);let k=day(d);ds.push({label:d.toLocaleDateString('en',{weekday:'short'}),value:sales.filter(s=>day(new Date(s.date))===k).reduce((n,s)=>n+s.total,0)})}let max=Math.max(1,...ds.map(x=>x.value));$('chart').innerHTML=ds.map(x=>`<div style="display:flex;gap:10px;align-items:center;margin:12px 0"><span style="width:35px">${x.label}</span><div style="height:9px;background:#edf2ee;border-radius:10px;flex:1;overflow:hidden"><div style="height:100%;background:#19845f;width:${x.value/max*100}%"></div></div><b>${money(x.value)}</b></div>`).join('');$('recent').innerHTML=saleTable(sales.slice().sort((a,b)=>b.date-a.date).slice(0,5))}
+function fillCategories(){let old=$('category').value,c=[...new Set(products.map(p=>p.category))];$('category').innerHTML='<option value="">Lahat ng kategorya</option>'+c.map(x=>`<option value="${esc(x)}">${esc(x)}</option>`).join('');$('category').value=c.includes(old)?old:''}
+function renderPos(){let q=($('search').value||'').toLowerCase(),c=$('category').value,a=products.filter(p=>(p.name.toLowerCase().includes(q)||p.category.toLowerCase().includes(q))&&(!c||p.category===c));$('productGrid').innerHTML=a.length?a.map(p=>`<div class="product" onclick="addCart('${p.id}')"><div class="emoji">${esc(p.emoji||'🛍️')}</div><b>${esc(p.name)}</b><div class="price">${money(p.price)}</div><small>${p.stock} stock · ${esc(p.category)}</small></div>`).join(''):'<div class="empty">Walang produktong nakita.</div>';renderCart()}
+function addCart(id){let p=products.find(x=>x.id===id);if(!p||p.stock<=0||cart[id]>=p.stock){toast('Kulang ang stock!');return}cart[id]=(cart[id]||0)+1;renderCart()}
+function changeQty(id,n){cart[id]=(cart[id]||0)+n;if(cart[id]<=0)delete cart[id];let p=products.find(x=>x.id===id);if(p&&cart[id]>p.stock)cart[id]=p.stock;renderCart()}
+function subtotal(){return Object.entries(cart).reduce((n,[id,q])=>n+(products.find(p=>p.id===id)?.price||0)*q,0)}
+function renderCart(){let es=Object.entries(cart).filter(([id,q])=>q>0&&products.some(p=>p.id===id));$('cartCount').textContent=es.length?'('+es.reduce((n,x)=>n+x[1],0)+')':'';$('cartItems').innerHTML=es.length?es.map(([id,q])=>{let p=products.find(p=>p.id===id);return `<div class="cartitem"><div><b>${esc(p.name)}</b><small>${money(p.price)} bawat isa</small><div class="qty"><button onclick="changeQty('${id}',-1)">−</button>${q}<button onclick="changeQty('${id}',1)">+</button></div></div><b>${money(p.price*q)}</b></div>`}).join(''):'<div class="empty">Wala pang order.</div>';let sub=subtotal(),disc=Math.min(sub,Math.max(0,Number($('discount').value||0))),total=sub-disc,cash=Number($('cash').value||0);$('subtotal').textContent=money(sub);$('total').textContent=money(total);$('change').textContent=money(Math.max(0,cash-total));$('checkoutBtn').disabled=!es.length||cash<total}
 function clearCart(){cart={};$('discount').value=0;$('cash').value='';renderCart()}
-function checkout(){let entries=Object.entries(cart).filter(([id,q])=>q>0);if(!entries.length)return;for(let [id,q] of entries){let p=products.find(p=>p.id===id);if(!p||p.stock<q){notify('Pakisuri ang stock.');return}}
-let subtotal=subTotal(),discount=Math.min(subtotal,Math.max(0,Number($('discount').value||0))),total=subtotal-discount,cash=Number($('cash').value||0);if(cash<total){notify('Kulang ang cash.');return}
-let items=entries.map(([id,qty])=>{let p=products.find(p=>p.id===id);return{id,name:p.name,qty,price:p.price,cost:p.cost,lineTotal:p.price*qty}});
-let cost=items.reduce((n,i)=>n+i.cost*i.qty,0),s={id:'NM-'+Date.now().toString().slice(-8),date:Date.now(),items,subtotal,discount,total,cash,change:cash-total,profit:total-cost};
-items.forEach(i=>products.find(p=>p.id===i.id).stock-=i.qty);sales.push(s);save();clearCart();renderAll();showReceipt(s);notify('Matagumpay ang benta!')}
-function showReceipt(s){$('receipt').innerHTML=`<div style="text-align:center"><h2>NegosyoMate</h2>SALES RECEIPT<p>${dateText(s.date)}<br>Resibo: ${esc(s.id)}</p></div><hr>${s.items.map(i=>`<p>${esc(i.name)} × ${i.qty}<span style="float:right">${peso(i.lineTotal)}</span></p>`).join('')}<hr><p>Subtotal <span style="float:right">${peso(s.subtotal)}</span></p><p>Discount <span style="float:right">${peso(s.discount)}</span></p><h3>Total <span style="float:right">${peso(s.total)}</span></h3><p>Cash <span style="float:right">${peso(s.cash)}</span></p><p>Sukli <span style="float:right">${peso(s.change)}</span></p><p style="text-align:center">Salamat po! ❤️</p><div class="actions"><button class="primary" onclick="window.print()">I-print</button><button onclick="closeReceipt()">Isara</button></div>`;$('receiptModal').classList.add('open')}
+function checkout(){if(role!=='cashier'&&role!=='admin'){return}let es=Object.entries(cart).filter(([id,q])=>q>0);if(!es.length)return;for(let [id,q] of es){let p=products.find(x=>x.id===id);if(!p||p.stock<q){toast('Pakisuri ang stock.');return}}let sub=subtotal(),disc=Math.min(sub,Math.max(0,Number($('discount').value||0))),total=sub-disc,cash=Number($('cash').value||0);if(cash<total){toast('Kulang ang cash.');return}let items=es.map(([id,qty])=>{let p=products.find(x=>x.id===id);return{id,name:p.name,qty,price:p.price,cost:p.cost,lineTotal:p.price*qty}}),cost=items.reduce((n,i)=>n+i.cost*i.qty,0),s={id:'NM-'+Date.now().toString().slice(-8),date:Date.now(),items,subtotal:sub,discount:disc,total,cash,change:cash-total,profit:total-cost};items.forEach(i=>products.find(p=>p.id===i.id).stock-=i.qty);sales.push(s);save();clearCart();renderAll();showReceipt(s);toast('Matagumpay ang benta!')}
+function showReceipt(s){$('receiptPrint').innerHTML=`<div style="text-align:center"><h2>NegosyoMate</h2>SALES RECEIPT<p>${dateText(s.date)}<br>Resibo: ${esc(s.id)}</p></div><hr>${s.items.map(i=>`<p>${esc(i.name)} × ${i.qty}<span style="float:right">${money(i.lineTotal)}</span></p>`).join('')}<hr><p>Subtotal <span style="float:right">${money(s.subtotal)}</span></p><p>Discount <span style="float:right">${money(s.discount)}</span></p><h3>Total <span style="float:right">${money(s.total)}</span></h3><p>Cash <span style="float:right">${money(s.cash)}</span></p><p>Sukli <span style="float:right">${money(s.change)}</span></p><p style="text-align:center">Salamat po!</p>`;$('receiptModal').classList.add('open')}
 function closeReceipt(){$('receiptModal').classList.remove('open')}
-function openForm(id){$('productForm').reset();$('pid').value='';$('pcost').value=0;$('pstock').value=0;$('formTitle').textContent='Magdagdag ng Produkto';if(id){let p=products.find(p=>p.id===id);if(!p)return;$('pid').value=p.id;$('pname').value=p.name;$('pcat').value=p.category;$('pprice').value=p.price;$('pcost').value=p.cost;$('pstock').value=p.stock;$('pemoji').value=p.emoji;$('formTitle').textContent='I-edit ang Produkto'}$('productModal').classList.add('open')}
-function closeForm(){$('productModal').classList.remove('open')}
-$('productForm').onsubmit=e=>{e.preventDefault();let id=$('pid').value,p={id:id||'p'+Date.now(),name:$('pname').value.trim(),category:$('pcat').value.trim(),price:Number($('pprice').value),cost:Number($('pcost').value||0),stock:Number($('pstock').value),emoji:$('pemoji').value.trim()||'🛍️'};if(!p.name||!p.category||p.price<=0||p.stock<0)return notify('Pakisuri ang detalye.');if(id)products=products.map(x=>x.id===id?p:x);else products.push(p);save();closeForm();renderAll();notify('Na-save ang produkto!')}
-function deleteProduct(id){let p=products.find(p=>p.id===id);if(!p||!confirm('Burahin ang '+p.name+'?'))return;products=products.filter(x=>x.id!==id);delete cart[id];save();renderAll()}
-function renderProducts(){let q=($('prodSearch').value||'').toLowerCase(),a=products.filter(p=>p.name.toLowerCase().includes(q));$('prodTable').innerHTML=a.length?`<div class="tablebox"><table><tr><th>Produkto</th><th>Kategorya</th><th>Presyo</th><th>Capital</th><th>Stock</th><th>Gagawin</th></tr>${a.map(p=>`<tr><td>${esc(p.emoji)} ${esc(p.name)}</td><td>${esc(p.category)}</td><td>${peso(p.price)}</td><td>${peso(p.cost)}</td><td><span class="pill ${p.stock<6?'low':''}">${p.stock}</span></td><td><div class="actions"><button class="light" onclick="openForm('${p.id}')">Edit</button><button class="danger" onclick="deleteProduct('${p.id}')">Delete</button></div></td></tr>`).join('')}</table></div>`:'<div class="empty">Wala pang produkto.</div>'}
-function saleTable(a){if(!a.length)return '<div class="empty">Wala pang benta.</div>';return `<div class="tablebox"><table><tr><th>Resibo</th><th>Petsa</th><th>Items</th><th>Total</th><th>Tantiyang Kita</th><th></th></tr>${a.map(s=>`<tr><td>${esc(s.id)}</td><td>${dateText(s.date)}</td><td>${s.items.reduce((n,i)=>n+i.qty,0)}</td><td><b>${peso(s.total)}</b></td><td>${peso(s.profit)}</td><td><button class="light" onclick="receiptById('${s.id}')">Resibo</button></td></tr>`).join('')}</table></div>`}
-function renderSales(){let d=$('dateFilter').value,q=$('saleSearch').value.toLowerCase();let a=sales.filter(s=>(!d||keyDate(new Date(s.date))===d)&&s.id.toLowerCase().includes(q)).sort((a,b)=>b.date-a.date);$('salesTable').innerHTML=saleTable(a)}
-function receiptById(id){let s=sales.find(s=>s.id===id);if(s)showReceipt(s)}
-function renderReports(){let revenue=totalOf(sales,'total'),profit=totalOf(sales,'profit'),units=sales.reduce((n,s)=>n+s.items.reduce((a,i)=>a+i.qty,0),0),low=products.filter(p=>p.stock<6);$('reportStats').innerHTML=[['Kabuuang Benta',peso(revenue)],['Tantiyang Kita',peso(profit)],['Items Sold',units],['Low Stock',low.length]].map(x=>`<div class="card"><small>${x[0]}</small><strong>${x[1]}</strong></div>`).join('');$('inventory').innerHTML=`<p>Total products: <b>${products.length}</b></p><p>Units in stock: <b>${products.reduce((n,p)=>n+p.stock,0)}</b></p><p>Stock capital: <b>${peso(products.reduce((n,p)=>n+p.cost*p.stock,0))}</b></p>`;$('alerts').innerHTML=low.length?low.map(p=>`<p>⚠️ ${esc(p.name)} — ${p.stock} na lang</p>`).join(''):'<div class="notice">Maayos ang stock sa ngayon.</div>';$('reportSales').innerHTML=saleTable(sales.slice().sort((a,b)=>b.date-a.date).slice(0,20))}
+function saleTable(a){if(!a.length)return '<div class="empty">Wala pang benta.</div>';return `<div class="tablebox"><table><tr><th>Resibo</th><th>Petsa</th><th>Items</th><th>Total</th><th>Tantiyang Kita</th></tr>${a.map(s=>`<tr><td>${esc(s.id)}</td><td>${dateText(s.date)}</td><td>${s.items.reduce((n,i)=>n+i.qty,0)}</td><td><b>${money(s.total)}</b></td><td>${money(s.profit)}</td></tr>`).join('')}</table></div>`}
+function renderSales(){if(role!=='admin')return;let d=$('salesDate').value,q=$('salesSearch').value.toLowerCase(),a=sales.filter(s=>(!d||day(new Date(s.date))===d)&&s.id.toLowerCase().includes(q)).sort((a,b)=>b.date-a.date);$('salesTable').innerHTML=saleTable(a)}
+function renderProducts(){if(role!=='admin')return;let q=($('productSearch').value||'').toLowerCase(),a=products.filter(p=>p.name.toLowerCase().includes(q));$('productTable').innerHTML=a.length?`<div class="tablebox"><table><tr><th>Produkto</th><th>Kategorya</th><th>Presyo</th><th>Capital</th><th>Stock</th><th>Gagawin</th></tr>${a.map(p=>`<tr><td>${esc(p.emoji)} ${esc(p.name)}</td><td>${esc(p.category)}</td><td>${money(p.price)}</td><td>${money(p.cost)}</td><td><span class="pill ${p.stock<6?'low':''}">${p.stock}</span></td><td><div class="actions"><button class="light" onclick="openProduct('${p.id}')">Edit</button><button class="danger" onclick="deleteProduct('${p.id}')">Delete</button></div></td></tr>`).join('')}</table></div>`:'<div class="empty">Walang produkto.</div>'}
+function renderReports(){if(role!=='admin')return;let low=products.filter(p=>p.stock<6);$('reportStats').innerHTML=[['Kabuuang benta',money(sum(sales,'total'))],['Tantiyang gross profit',money(sum(sales,'profit'))],['Low-stock products',low.length]].map(x=>`<div class="card"><small>${x[0]}</small><strong>${x[1]}</strong></div>`).join('');$('inventoryReport').innerHTML=`<p>Total products: <b>${products.length}</b></p><p>Total units in stock: <b>${products.reduce((n,p)=>n+p.stock,0)}</b></p><p>Capital value in stock: <b>${money(products.reduce((n,p)=>n+p.cost*p.stock,0))}</b></p>${low.length?low.map(p=>`<p><span class="pill low">Low stock</span> ${esc(p.name)} — ${p.stock} na lang</p>`).join(''):'<p>Maayos ang stock sa ngayon.</p>'}`;$('reportTable').innerHTML=saleTable(sales.slice().sort((a,b)=>b.date-a.date).slice(0,20))}
+function openProduct(id){if(role!=='admin')return; $('productForm').reset();$('editId').value='';$('pcost').value=0;$('pstock').value=0;$('formTitle').textContent='Magdagdag ng Produkto';if(id){let p=products.find(x=>x.id===id);if(!p)return;$('editId').value=p.id;$('pname').value=p.name;$('pcat').value=p.category;$('pprice').value=p.price;$('pcost').value=p.cost;$('pstock').value=p.stock;$('pemoji').value=p.emoji;$('formTitle').textContent='I-edit ang Produkto'}$('productModal').classList.add('open')}
+function closeProduct(){$('productModal').classList.remove('open')}
+$('productForm').onsubmit=e=>{e.preventDefault();if(role!=='admin')return;let id=$('editId').value,p={id:id||'p'+Date.now(),name:$('pname').value.trim(),category:$('pcat').value.trim(),price:Number($('pprice').value),cost:Number($('pcost').value||0),stock:Number($('pstock').value),emoji:$('pemoji').value.trim()||'🛍️'};if(!p.name||!p.category||p.price<=0||p.stock<0)return toast('Pakisuri ang mga detalye.');if(id)products=products.map(x=>x.id===id?p:x);else products.push(p);save();closeProduct();renderAll();toast('Na-save ang produkto!')}
+function deleteProduct(id){if(role!=='admin')return;let p=products.find(x=>x.id===id);if(p&&confirm('Burahin ang '+p.name+'?')){products=products.filter(x=>x.id!==id);delete cart[id];save();renderAll()}}
+function changePins(){if(role!=='admin')return;let a=$('newAdminPin').value,b=$('newCashierPin').value;if(a.length<4||b.length<4||!/^\d+$/.test(a)||!/^\d+$/.test(b)){alert('Gumamit ng numeric PIN na hindi bababa sa 4 digits.');return}adminPin=a;cashierPin=b;localStorage.setItem(K_ADMIN,a);localStorage.setItem(K_CASHIER,b);$('newAdminPin').value='';$('newCashierPin').value='';toast('Na-update ang mga PIN.')}
 function download(name,data,type){let u=URL.createObjectURL(new Blob([data],{type})),a=document.createElement('a');a.href=u;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),1500)}
-function backup(){download('negosyomate-backup-'+keyDate()+'.json',JSON.stringify({products,sales},null,2),'application/json')}
-function restoreBackup(e){let f=e.target.files[0];if(!f)return;let r=new FileReader();r.onload=()=>{try{let d=JSON.parse(r.result);if(!Array.isArray(d.products)||!Array.isArray(d.sales))throw Error();if(!confirm('Papaltan ang kasalukuyang data. Ituloy?'))return;products=d.products;sales=d.sales;save();renderAll();notify('Na-restore ang backup.')}catch(err){alert('Hindi valid na NegosyoMate backup.')}finally{e.target.value=''}};r.readAsText(f)}
-function exportCSV(){let rows=[['Receipt','Date','Items','Subtotal','Discount','Total','Cash','Change','Profit'],...sales.map(s=>[s.id,dateText(s.date),s.items.reduce((n,i)=>n+i.qty,0),s.subtotal,s.discount,s.total,s.cash,s.change,s.profit])];download('negosyomate-sales.csv','\ufeff'+rows.map(r=>r.map(v=>'"'+String(v??'').replace(/"/g,'""')+'"').join(',')).join('\r\n'),'text/csv;charset=utf-8')}
-function clearAll(){if(!confirm('Sigurado ka bang burahin lahat ng produkto at benta?'))return;if(!confirm('Huling kumpirmasyon: burahin ang lahat?'))return;products=[];sales=[];cart={};save();renderAll();notify('Nabura na ang data.')}
+function backup(){if(role!=='admin')return;download('negosyomate-backup-'+day()+'.json',JSON.stringify({products,sales,adminPin,cashierPin},null,2),'application/json')}
+function restoreBackup(e){if(role!=='admin')return;let f=e.target.files[0];if(!f)return;let r=new FileReader();r.onload=()=>{try{let d=JSON.parse(r.result);if(!Array.isArray(d.products)||!Array.isArray(d.sales))throw Error();if(!confirm('Papaltan nito ang kasalukuyang records. Ituloy?'))return;products=d.products;sales=d.sales;save();renderAll();toast('Na-restore ang backup.')}catch(err){alert('Hindi valid ang backup file.')}finally{e.target.value=''}};r.readAsText(f)}
+function exportCSV(){if(role!=='admin')return;let rows=[['Receipt','Date','Items','Subtotal','Discount','Total','Cash','Change','Profit'],...sales.map(s=>[s.id,dateText(s.date),s.items.reduce((n,i)=>n+i.qty,0),s.subtotal,s.discount,s.total,s.cash,s.change,s.profit])];download('negosyomate-sales.csv','\ufeff'+rows.map(r=>r.map(v=>'"'+String(v??'').replace(/"/g,'""')+'"').join(',')).join('\r\n'),'text/csv;charset=utf-8')}
+function clearAll(){if(role!=='admin')return;if(!confirm('Burahin lahat ng products at sales?'))return;products=[];sales=[];cart={};save();renderAll();toast('Nabura ang records.')}
 renderAll();
 </script>
 </body>
