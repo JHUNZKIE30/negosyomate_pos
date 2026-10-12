@@ -131,6 +131,89 @@ function restoreBackup(e){if(role!=='admin')return;let f=e.target.files[0];if(!f
 function exportCSV(){if(role!=='admin')return;let rows=[['Receipt','Date','Items','Subtotal','Discount','Total','Cash','Change','Profit'],...sales.map(s=>[s.id,dateText(s.date),s.items.reduce((n,i)=>n+i.qty,0),s.subtotal,s.discount,s.total,s.cash,s.change,s.profit])];download('negosyomate-sales.csv','\ufeff'+rows.map(r=>r.map(v=>'"'+String(v??'').replace(/"/g,'""')+'"').join(',')).join('\r\n'),'text/csv;charset=utf-8')}
 function clearAll(){if(role!=='admin')return;if(!confirm('Burahin lahat ng products at sales?'))return;products=[];sales=[];cart={};save();renderAll();toast('Nabura ang records.')}
 renderAll();
+ 
+/* NegosyoMate POS keyboard shortcuts */
+document.addEventListener("keydown", function (e) {
+  const tag = document.activeElement?.tagName;
+  const typing = ["INPUT", "TEXTAREA", "SELECT"].includes(tag);
+  const modalOpen =
+    document.querySelector(".modalbg.open") !== null;
+
+  // Escape: isara ang bukas na dialog
+  if (e.key === "Escape") {
+    if ($("productModal").classList.contains("open")) {
+      closeProduct();
+    }
+    if ($("receiptModal").classList.contains("open")) {
+      closeReceipt();
+    }
+    return;
+  }
+
+  // Gumagana ang mga POS shortcut kapag naka-login
+  if ($("app").classList.contains("hidden")) return;
+  if (role !== "cashier" && page !== "pos") return;
+  if (modalOpen) return;
+
+  // F2: product search
+  if (e.key === "F2") {
+    e.preventDefault();
+    go("pos");
+    $("search").focus();
+    $("search").select();
+  }
+
+  // F4: cash payment
+  if (e.key === "F4") {
+    e.preventDefault();
+    go("pos");
+    $("cash").focus();
+    $("cash").select();
+  }
+
+  // F6: discount
+  if (e.key === "F6") {
+    e.preventDefault();
+    go("pos");
+    $("discount").focus();
+    $("discount").select();
+  }
+
+  // F8: checkout — may validation pa rin
+  if (e.key === "F8") {
+    e.preventDefault();
+    if (document.activeElement?.id === "cash" || !typing) {
+      $("checkoutBtn").click();
+    } else {
+      $("cash").focus();
+    }
+  }
+
+  // F10: clear cart — may confirmation
+  if (e.key === "F10") {
+    e.preventDefault();
+    if (confirm("I-clear ang kasalukuyang order?")) {
+      clearCart();
+      $("search").focus();
+    }
+  }
+
+  // Ctrl+K: mabilisang product search
+  if (e.ctrlKey && e.key.toLowerCase() === "k") {
+    e.preventDefault();
+    go("pos");
+    $("search").focus();
+    $("search").select();
+  }
+});
+
+// Enter sa cash field: subukang mag-checkout
+$("cash").addEventListener("keydown", function (e) {
+  if (e.key === "Enter") {
+    e.preventDefault();
+    $("checkoutBtn").click();
+  }
+});
 </script>
 </body>
 </html>
